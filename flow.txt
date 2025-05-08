@@ -1,0 +1,6 @@
+1. User will enter the symptoms
+2. Symptoms will be classified into a disease using the disease detection model
+3. That entry will be recorded and added as symptoms | date | prognosis to the master entry list temporary lang yung dataset/sample_user_data.csv
+4. Every time a new entry is added:
+    - Current outbreaks will be checked
+    - Future outbreaks will be checked
