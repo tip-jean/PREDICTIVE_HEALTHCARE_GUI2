@@ -77,6 +77,7 @@ def symptom_checker():
 
         try:
             # Perform prediction
+            input_df = input_df.reindex(columns=symptoms, fill_value=0)
             prediction = model.predict(input_df)
             predicted_disease = le.inverse_transform(prediction)[0]
             input_df['prognosis'] = predicted_disease
@@ -109,6 +110,18 @@ def outbreak_forecasting():
             st.write("Detected Outbreaks:", detected_outbreaks)
             st.write("Forecasted Outbreaks:", forecasted_outbreaks)
             
+            split_date = detected_outbreaks['date'].max()
+
+            # Add 'source' column to forecasted_outbreaks based on date
+            forecasted_outbreaks['source'] = forecasted_outbreaks['date'].apply(
+                lambda d: 'historical' if pd.to_datetime(
+                    d) <= pd.to_datetime(split_date) else 'forecasted'
+            )
+
+            total_outbreaks = forecasted_outbreaks.copy()
+
+            # Ensure date is datetime
+            total_outbreaks['date'] = pd.to_datetime(total_outbreaks['date'])
             # Plot outbreak data
             for disease in forecasted_outbreaks['prognosis'].unique():
                 disease_data = forecasted_outbreaks[forecasted_outbreaks['prognosis'] == disease]
