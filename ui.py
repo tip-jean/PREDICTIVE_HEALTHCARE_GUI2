@@ -45,33 +45,26 @@ symptoms = [
 # Streamlit UI for symptom input and disease prediction
 def symptom_checker():
     st.subheader("Disease Prediction")
-
-    # Split symptoms into two parts
-    half = len(symptoms) // 2
-    first_half = symptoms[:half]
-    second_half = symptoms[half:]
-
-    # Display first half in two columns
-    cols = st.columns(2)
-    user_input = {}
-    for i, symptom in enumerate(first_half):
-        with cols[i % 2]:
-            user_input[symptom] = st.checkbox(symptom)
-
-    # Show More Symptoms button
-    if st.button("Show More Symptoms"):
-        st.write("**Additional Symptoms:**")
-        more_cols = st.columns(2)
-        for i, symptom in enumerate(second_half):
-            with more_cols[i % 2]:
-                user_input[symptom] = st.checkbox(symptom)
+    
+    # Multi-select for symptoms
+    selected_symptoms = st.multiselect(
+        "Select Symptoms (you can search and select multiple)", 
+        symptoms
+    )
 
     # Prediction button
     if st.button("Predict Disease"):
+        # Create a dictionary with all symptoms set to 0
+        user_input = {symptom: 0 for symptom in symptoms}
+
+        # Update the dictionary with selected symptoms
+        for symptom in selected_symptoms:
+            user_input[symptom] = 1
+
         input_df = pd.DataFrame([user_input])
-        
-        # Check if at least one symptom is checked
-        if not input_df.loc[:, input_df.columns != 'prognosis'].any(axis=None):
+
+        # Check if at least one symptom is selected
+        if not selected_symptoms:
             st.warning("Please select at least one symptom.")
             return
 
